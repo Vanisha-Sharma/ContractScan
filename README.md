@@ -51,7 +51,7 @@ contractscan/
 ├── backend/
 │   ├── server.js          # Express API — handles PDF upload + AI call
 │   ├── package.json
-│   └── .env.example       # Environment variable template
+│   └── .env      # Environment variable template
 │
 └── frontend/
     ├── index.html          # App entry + Google Fonts
@@ -60,7 +60,7 @@ contractscan/
     │   ├── App.jsx         # All React components
     │   ├── App.css         # Full dark theme styling
     │   └── main.jsx        # ReactDOM entry point
-    └── .env.example
+    └── .env
 ```
 
 ---
@@ -99,7 +99,7 @@ cd contractscan
 ```bash
 cd backend
 npm install
-cp .env.example .env
+cp .env
 ```
 
 Edit `.env`:
@@ -117,7 +117,7 @@ npm run dev
 ```bash
 cd ../frontend
 npm install
-cp .env.example .env
+cp .env
 # VITE_API_URL is already set to http://localhost:3001
 npm run dev
 # Frontend running on http://localhost:5173
