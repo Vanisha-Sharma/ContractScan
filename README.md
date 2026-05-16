@@ -1,29 +1,46 @@
 # ⟁ ContractScan — AI Legal Risk Analyzer
 
-> Upload any PDF contract. AI scans every clause for hidden risks and explains them in plain English.
-
-![ContractScan](https://img.shields.io/badge/stack-React%20%2B%20Node.js%20%2B%20Gemini-gold)
-![License](https://img.shields.io/badge/license-MIT-green)
+> Upload any PDF contract. AI scans every clause for hidden risks and explains them in plain English — instantly.
 
 ---
 
-## What it does
+## Live App
 
-- **Drag & drop** any PDF contract (NDA, employment, freelance, rental, SaaS)
-- **AI reads every clause** and flags risks as High / Medium / Low
+> 📎 [contractscan.vercel.app](https://contractscan.vercel.app)
+
+---
+
+## What is ContractScan?
+
+Most people sign contracts without fully understanding what they're agreeing to. Legal language is dense, intentionally vague, and full of traps.
+
+**ContractScan** solves this. Drop in any PDF contract — employment agreement, NDA, freelance contract, rental agreement, SaaS terms — and AI reads every clause, flags the risky ones by severity, and explains each risk in plain English with a suggestion on what to do.
+
+---
+
+## Features
+
+- **Drag & drop PDF upload** — any contract up to 10MB
+- **AI-powered clause detection** — identifies 4–8 risky clauses per contract
+- **3-level severity system** — High / Medium / Low, color-coded
 - **Plain English explanations** — no legal jargon
-- **Actionable suggestions** for each risky clause
+- **Actionable suggestions** — tells you exactly what to ask for or watch out for
+- **What's fine too** — shows clauses that are actually reasonable
 - **Overall verdict** — sign, negotiate, or avoid?
+- **Fully responsive** — works on mobile and desktop
+
+---
 
 ## Tech Stack
 
-| Layer | Tech |
-|-------|------|
-| Frontend | React 18, Vite, CSS (no UI library) |
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, Vite |
+| Styling | Pure CSS (no UI library) — custom dark editorial theme |
 | Backend | Node.js, Express.js |
-| AI | Google Gemini 1.5 Flash |
-| PDF | pdf-parse |
-| Deploy | Vercel (frontend) + Render (backend) |
+| File Handling | Multer (in-memory), pdf-parse |
+| AI | OpenRouter API → auto-selects best available free model |
+| Deployment | Vercel (frontend) + Render (backend) |
 
 ---
 
@@ -32,77 +49,136 @@
 ```
 contractscan/
 ├── backend/
-│   ├── server.js          # Express API + Gemini integration
+│   ├── server.js          # Express API — handles PDF upload + AI call
 │   ├── package.json
-│   └── .env.example
+│   └── .env.example       # Environment variable template
+│
 └── frontend/
+    ├── index.html          # App entry + Google Fonts
+    ├── vite.config.js
     ├── src/
-    │   ├── App.jsx        # Full React app
-    │   ├── App.css        # All styles
-    │   └── main.jsx       # Entry point
-    ├── index.html
-    ├── package.json
-    └── vite.config.js
+    │   ├── App.jsx         # All React components
+    │   ├── App.css         # Full dark theme styling
+    │   └── main.jsx        # ReactDOM entry point
+    └── .env.example
 ```
 
 ---
 
-## Setup & Run Locally
+## How It Works
 
-### 1. Get a Gemini API Key
-- Go to https://aistudio.google.com/app/apikey
-- Create a free API key (it's free!)
+```
+User uploads PDF
+      ↓
+React sends file via FormData to POST /analyze
+      ↓
+Express receives it → Multer stores in memory → pdf-parse extracts text
+      ↓
+Text + structured prompt sent to OpenRouter API (free AI model)
+      ↓
+AI returns JSON: { summary, overallRisk, clauses[], positives[], verdict }
+      ↓
+React renders expandable clause cards sorted by severity
+```
 
-### 2. Backend Setup
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js v18+
+- A free [OpenRouter](https://openrouter.ai) account + API key
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/YOUR_USERNAME/contractscan.git
+cd contractscan
+```
+
+### 2. Set up the backend
 ```bash
 cd backend
 npm install
 cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
-npm run dev
-# Backend runs on http://localhost:3001
 ```
 
-### 3. Frontend Setup
+Edit `.env`:
+```
+OPENROUTER_API_KEY=sk-or-v1-your_key_here
+PORT=3001
+```
+
 ```bash
-cd frontend
+npm run dev
+# Backend running on http://localhost:3001
+```
+
+### 3. Set up the frontend
+```bash
+cd ../frontend
 npm install
 cp .env.example .env
-# VITE_API_URL=http://localhost:3001 (already set)
+# VITE_API_URL is already set to http://localhost:3001
 npm run dev
-# Frontend runs on http://localhost:5173
+# Frontend running on http://localhost:5173
 ```
 
 ---
 
-## Deploy to Production
+## Deployment
 
 ### Frontend → Vercel
-```bash
-cd frontend
-npm run build
-# Push to GitHub, connect repo to Vercel
-# Set env var: VITE_API_URL=https://your-backend.onrender.com
-```
+1. Push repo to GitHub
+2. Go to [vercel.com](https://vercel.com) → Import repo
+3. Set root directory to `frontend`
+4. Add environment variable: `VITE_API_URL=https://your-backend.onrender.com`
+5. Deploy
 
 ### Backend → Render
-1. Push to GitHub
-2. New Web Service on render.com → connect repo
-3. Root directory: `backend`
+1. Go to [render.com](https://render.com) → New Web Service
+2. Connect your GitHub repo
+3. Set root directory to `backend`
 4. Build command: `npm install`
 5. Start command: `node server.js`
-6. Add env var: `GEMINI_API_KEY=your_key`
+6. Add environment variable: `OPENROUTER_API_KEY=your_key`
+7. Deploy
 
 ---
 
-## Features
+## Key Engineering Decisions
 
-- Identifies: IP grabs, non-compete traps, one-sided termination, auto-renewal, liability caps, payment traps
-- Color-coded severity: Red (High) / Yellow (Medium) / Green (Low)
-- Expand/collapse each clause card
-- Shows what's actually fine in the contract too
-- Fully responsive mobile design
+**Why OpenRouter instead of direct Gemini/OpenAI?**
+OpenRouter provides a unified API across 300+ models with a free tier that auto-routes to the best available model. This makes the app resilient — if one model goes down, it automatically switches.
+
+**Why in-memory PDF storage?**
+Using Multer's memory storage means PDFs are never written to disk — better for privacy, simpler for deployment (no file system management needed on serverless platforms).
+
+**Why prompt engineering for structured output?**
+Instead of post-processing raw AI text, the system prompt explicitly instructs the model to return valid JSON in a defined schema. This makes parsing reliable and the frontend predictable.
 
 ---
 
-## Built by Vanisha Sharma
+## What It Detects
+
+- IP ownership grabs (company claiming rights to personal projects)
+- Non-compete clauses (scope, duration, geography)
+- One-sided termination rights
+- Auto-renewal traps
+- Liability caps unfavorable to the employee/user
+- Penalty and clawback clauses
+- Overly broad confidentiality terms
+- Payment terms with hidden conditions
+
+---
+
+## Built By
+
+**Vanisha Sharma**
+3rd Year CSE Student · Global Institute of Technology, Jaipur
+[LinkedIn](#) · [GitHub](#) · [Portfolio](#)
+
+---
+
+## License
+
+MIT — free to use, modify, and distribute.
