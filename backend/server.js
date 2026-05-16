@@ -89,6 +89,10 @@ app.post("/analyze", upload.single("pdf"), async (req, res) => {
   }
 });
 
+app.get("/", (_, res) => {
+  res.send("ContractScan API Running");
+});
+
 app.get("/health", (_, res) => res.json({ status: "ok" }));
 
 const PORT = process.env.PORT || 3001;
