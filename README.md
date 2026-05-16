@@ -6,7 +6,7 @@
 
 ## Live App
 
-> 📎 [contractscan.vercel.app](https://contractscan.vercel.app)
+> 📎 [contractscan.vercel.app]([https://contractscan.vercel.app](https://contract-scan-phi.vercel.app/))
 
 ---
 
