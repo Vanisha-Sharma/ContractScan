@@ -91,7 +91,7 @@ React renders expandable clause cards sorted by severity
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/contractscan.git
+git clone https://github.com/Vanisha-Sharma/contractscan.git
 cd contractscan
 ```
 
